@@ -1,12 +1,12 @@
 package src.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import src.model.CartDTO;
-import src.model.ProductDto;
 import org.springframework.web.bind.annotation.*;
+import src.model.CartItemDTO;
 import src.service.CartService;
 
-import java.util.Map;
 
 @RequestMapping("/cart")
 @RestController
@@ -21,12 +21,18 @@ public class CartController {
     }
 
     @GetMapping("/{id}")
-    public Map<ProductDto,Integer> getCartById(@PathVariable Long id){
+    public CartDTO getCartById(@PathVariable Long id){
        return cartService.getById(id);
     }
 
-    @PatchMapping("/{id}")
-    public CartDTO addProduct(@PathVariable Long id, @RequestBody ProductDto productDto){
-       return cartService.addProduct(id,productDto);
+    @PatchMapping("/add/{id}")
+    public CartDTO addProduct(@PathVariable Long id, @RequestBody CartItemDTO itemDTO){
+       return cartService.addProductToCart(id,itemDTO);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteCart(@PathVariable Long id){
+        cartService.deleteCart(id);
+        ResponseEntity.accepted();
     }
 }

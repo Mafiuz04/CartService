@@ -4,21 +4,18 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Cart {
+public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private BigDecimal cartPrice;
-    @OneToMany
-    private List<CartItem> items;
-    @Column(nullable = false)
-    private LocalDateTime createdTime;
+    private Long productId;
+    private Integer amount;
+    private BigDecimal price = BigDecimal.valueOf(0);
+    @ManyToOne
+    private Cart cart;
 }

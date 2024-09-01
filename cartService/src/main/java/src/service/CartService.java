@@ -1,53 +1,85 @@
 package src.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import src.exception.CartServiceException;
 import lombok.RequiredArgsConstructor;
+import src.mapper.CartItemMapper;
 import src.mapper.CartMapper;
-import src.mapper.ProductMapper;
 import src.model.Cart;
 import src.model.CartDTO;
-import src.model.Product;
-import src.model.ProductDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import src.model.CartItem;
+import src.model.CartItemDTO;
+import src.repository.CartItemRepository;
 import src.repository.CartRepository;
-import src.repository.ProductRepository;
 
-import java.util.Map;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
     private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
+    private final CartItemRepository cartItemRepository;
     private final CartMapper cartMapper;
-    private final ProductMapper productMapper;
+    private final CartItemMapper cartItemMapper;
 
-    public CartDTO createCart(){
+    public CartDTO createCart() {
         Cart cart = new Cart();
+        cart.setCreatedTime(LocalDateTime.now());
         cartRepository.save(cart);
         return cartMapper.toDto(cart);
     }
 
-    public Map<ProductDto,Integer> getById(Long id){
+    public CartDTO getById(Long id) {
         Cart cart = cartRepository.findById(id)
                 .orElseThrow(() -> new CartServiceException("There is no cart with given ID", HttpStatus.BAD_REQUEST));
-        return cartMapper.mapProductMapToDtoMap(cart.getProducts());
-    }
-
-    public CartDTO addProduct(Long id, ProductDto productDto){
-        Cart cart = cartRepository.findById(id)
-                .orElseThrow(() -> new CartServiceException("There is no cart with given ID", HttpStatus.BAD_REQUEST));
-        productRepository.save(productMapper.toEntity(productDto));
-        Map<Product, Integer> products = cart.getProducts();
-        if(products.containsKey(productDto)){
-            Integer productAmount = cart.getProducts().get(productDto);
-            productAmount++;
-            cartRepository.saveAndFlush(cart);
-        } else if (!products.containsKey(productDto)) {
-            cart.getProducts().putIfAbsent(productMapper.toEntity(productDto),Integer.valueOf(1));
-            cartRepository.saveAndFlush(cart);
-        }
         return cartMapper.toDto(cart);
     }
+
+    @Transactional
+    public CartDTO addProductToCart(Long id, CartItemDTO cartItemDTO) {
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new CartServiceException("There is no cart with given ID", HttpStatus.BAD_REQUEST));
+
+        CartItem cartItem = cartItemMapper.toEntity(cartItemDTO);
+        cartItemRepository.saveAndFlush(cartItem);
+
+        List<CartItem> items = cart.getItems();
+        boolean found = false;
+
+        if (items.isEmpty()) {
+            items.add(cartItem);
+            cart.setCartPrice(BigDecimal.ZERO);
+            cart.setCartPrice(cart.getCartPrice().add(cartItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getAmount()))));
+        } else {
+            for (CartItem item : items) {
+                if (item.getProductId().equals(cartItem.getProductId())) {
+                    item.setAmount(item.getAmount() + 1);
+                    cart.setCartPrice(cart.getCartPrice().add(cartItem.getPrice()));
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                items.add(cartItem);
+                cart.setCartPrice(cart.getCartPrice().add(cartItem.getPrice()));
+            }
+        }
+
+        cart.setItems(items);
+        cartRepository.save(cart);
+        return cartMapper.toDto(cart);
+    }
+
+
+    public void deleteCart(Long id) {
+        cartRepository.deleteById(id);
+    }
 }
+
+

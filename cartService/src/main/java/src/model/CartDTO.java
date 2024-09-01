@@ -1,12 +1,19 @@
 package src.model;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class CartDTO {
     private Long id;
-    private Map<Product,Integer> products = new HashMap<>();
+    private BigDecimal cartPrice;
+    private List<CartItemDTO> items;
+    private LocalDateTime createdTime;
 }

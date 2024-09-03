@@ -6,7 +6,6 @@ import org.mapstruct.Mapper;
 import src.model.CartItem;
 import src.model.CartItemDTO;
 
-import java.util.Map;
 
 @Mapper(componentModel = "spring")
 public interface CartMapper {

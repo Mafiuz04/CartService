@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public class CartServiceException extends  RuntimeException{
+public class CartServiceException extends RuntimeException{
     private final String message;
     private final HttpStatus status;
 }

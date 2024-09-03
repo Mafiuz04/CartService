@@ -1,8 +1,6 @@
 package src.mapper;
 
 import org.mapstruct.Mapper;
-import src.model.Cart;
-import src.model.CartDTO;
 import src.model.CartItem;
 import src.model.CartItemDTO;
 

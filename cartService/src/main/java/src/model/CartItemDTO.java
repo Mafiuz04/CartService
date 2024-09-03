@@ -1,14 +1,14 @@
 package src.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class CartItemDTO {
     private Long id;
     private Long productId;

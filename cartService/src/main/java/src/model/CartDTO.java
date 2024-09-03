@@ -1,7 +1,7 @@
 package src.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class CartDTO {
     private Long id;
     private BigDecimal cartPrice;

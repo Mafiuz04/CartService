@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
